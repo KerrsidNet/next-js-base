@@ -13,14 +13,17 @@
     "migration:create": "npx prisma migrate dev --create-only",
     "migrate": "npx prisma migrate dev",
     "migrate:prod": "npx prisma migrate deploy",
-    "seed": "node prisma/seeder.ts"
+    "seed": "npx prisma db seed"
   },
   "dependencies": {
+    "@next-auth/prisma-adapter": "^0.4.4-canary.81",
     "@nextui-org/react": "^2.2.10",
     "@prisma/client": "^5.11.0",
+    "bcrypt": "^5.1.1",
     "framer-motion": "^11.0.8",
     "mysql2": "^3.9.2",
     "next": "14.1.3",
+    "next-auth": "^4.24.7",
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-dom": "^18",
@@ -29,6 +32,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.11.28",
     "@types/react": "^18",
     "@types/react-dom": "^18",

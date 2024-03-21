@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import "react-toastify/dist/ReactToastify.css";
 import { Slide, ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -32,7 +33,6 @@ export default function RootLayout({
             containerId="default"
             theme="colored"
             transition={Slide}
-            // enableMultiContainer={true}
           />
           <ToastContainer
             className="ui-pnotify stack-bottomleft"
@@ -46,7 +46,6 @@ export default function RootLayout({
             containerId="bottom-left"
             theme="colored"
             transition={Slide}
-            // enableMultiContainer={true}
           />
           <ToastContainer
             className="ui-pnotify stack-bottomright"
@@ -60,7 +59,6 @@ export default function RootLayout({
             containerId="bottom-right"
             theme="colored"
             transition={Slide}
-            // enableMultiContainer={true}
           />
           <ToastContainer
             className="ui-pnotify stack-bar-top"
@@ -73,7 +71,6 @@ export default function RootLayout({
             containerId="top-bar"
             theme="colored"
             transition={Slide}
-            // enableMultiContainer={true}
           />
           <ToastContainer
             className="ui-pnotify stack-bar-bottom"
@@ -87,7 +84,6 @@ export default function RootLayout({
             containerId="bottom-bar"
             theme="colored"
             transition={Slide}
-            // enableMultiContainer={true}
           />
         </Providers>
       </body>

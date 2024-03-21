@@ -15,10 +15,30 @@ generator client {
 }
 
 model User {
-    id      String  @id @default(uuid())
-    email   String  @unique
-    summary String?
-    name    String?
+    id       String  @id @default(uuid())
+    email    String  @unique
+    password String
+    summary  String?
+    name     String?
+    role     Role?   @relation(fields: [roleId], references: [id]) // Each user has one associated role
+    roleId   String?
 
     @@map("users")
+}
+
+model Role {
+    id          String           @id @default(uuid())
+    name        String           @unique
+    users       User[] // One role can be associated with multiple users
+    permissions RolePermission[] // One role can have multiple permissions
+
+    @@map("roles")
+}
+
+model RolePermission {
+    id    String @id @default(uuid())
+    name  String @unique
+    roles Role[] // One permission can be associated with multiple roles
+
+    @@map("role_permissions")
 }

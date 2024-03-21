@@ -13,7 +13,6 @@ import { MdEmail } from "react-icons/md";
 import { z, ZodError } from "zod";
 import { addUser, updateUser } from "@/app/dashboard/users/userService";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import PNotify from "../PNotify";
 
 // Define Zod schema for the form data
@@ -23,6 +22,7 @@ const schema = z.object({
 });
 
 interface User {
+  id: number | string;
   email: string;
   summary?: string | null;
   name?: string | null;

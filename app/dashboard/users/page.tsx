@@ -32,7 +32,7 @@ export default function Users() {
     currentEntry: null,
   });
 
-  const pageSize = 2;
+  const pageSize = 5;
 
   const appendQueriesToUrl = (
     queries: { key: string; value: string | number }[],

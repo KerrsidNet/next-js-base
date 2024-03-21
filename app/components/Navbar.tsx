@@ -14,16 +14,13 @@ import {
 } from "@nextui-org/react";
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 const Navbar = () => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const router = useRouter();
 
-    const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
-    };
-
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await signOut({ redirect: true });
         router.push('/login');
     };
 
