@@ -60,6 +60,12 @@ export const authOptions: AuthOptions = {
         signIn: "/login",
     },
     callbacks: {
+        async signIn({ user, account, profile, email, credentials }) {
+            if (user?.error) {
+                throw new Error(user?.error || "");
+            }
+            return true
+        },
         async jwt({ token, user }) {
             if (user) {
                 const newToken = {

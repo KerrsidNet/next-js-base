@@ -15,13 +15,6 @@ import { addUser, updateUser } from "@/app/api/users/route";
 import { toast } from "react-toastify";
 import PNotify from "../PNotify";
 
-// Define Zod schema for the form data
-const schema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(1, "Password is required"),
-});
-
 interface User {
   id: number | string;
   email: string;
@@ -43,15 +36,22 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
   currentEntry,
   onUpdateUser,
 }) => {
+
+  // Define Zod schema for the form data
+  const schema = z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email format"),
+    password: !currentEntry ? z.string().min(1, "Password is required") : z.string().optional(),
+  });
+
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
   const [formData, setFormData] = useState<{
     name: string;
     email: string;
-    password: string;
+    password?: string;
   }>({
     name: currentEntry?.name ?? "",
     email: currentEntry?.email ?? "",
-    password: "",
   });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
@@ -152,21 +152,23 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
               value={formData.email}
               onValueChange={(value) => handleValueChange("email", value)}
             />
-            <Input
-              endContent={
-                <MdLock className="text-default-400 pointer-events-none flex-shrink-0 self-center text-xl" />
-              }
-              required
-              type="password"
-              label="Password"
-              name="password"
-              variant="bordered"
-              isInvalid={!!formErrors["password"]}
-              color={formErrors["password"] ? "danger" : "default"}
-              errorMessage={formErrors["password"]}
-              value={formData.password}
-              onValueChange={(value) => handleValueChange("password", value)}
-            />
+            {!currentEntry && (
+              <Input
+                endContent={
+                  <MdLock className="text-default-400 pointer-events-none flex-shrink-0 self-center text-xl" />
+                }
+                required
+                type="password"
+                label="Password"
+                name="password"
+                variant="bordered"
+                isInvalid={!!formErrors["password"]}
+                color={formErrors["password"] ? "danger" : "default"}
+                errorMessage={formErrors["password"]}
+                value={formData.password}
+                onValueChange={(value) => handleValueChange("password", value)}
+              />
+            )}
           </ModalBody>
           <ModalFooter>
             <Button color="danger" variant="light" onPress={onOpenChange}>

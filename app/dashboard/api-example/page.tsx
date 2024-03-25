@@ -29,12 +29,10 @@ const ApiExample = () => {
 
                     // Parse the JSON response
                     const jsonData = await response.json();
-                    console.log(jsonData);
 
                     // Update the state variable with the fetched data
                     setTotalPages(jsonData.results.length / pageSize);
                     setData(jsonData.results);
-                    console.log(jsonData.results);
                 } catch (error) {
                     console.error('Error fetching data:', error);
                 }

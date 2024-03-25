@@ -6,7 +6,6 @@ import { FaAngleLeft, FaHome, FaUser } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
 import sidebarItems from "./sidebarItems"
 import { getFilteredByRoleItems } from "@/utils/helpers";
-
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
   const filteredSidebarItems = getFilteredByRoleItems(sidebarItems);

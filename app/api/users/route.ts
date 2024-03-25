@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { withAuthentication } from "@/auth";
+import { hash } from "bcrypt";
 
 interface GetUsersOptions {
   page?: number;
@@ -81,6 +82,9 @@ export const updateUser = async (id: any, data: any) => {
       return toReturn;
     }
 
+    if (data.password) {
+      data.password = await hash(data.password, 10);
+    }
     // Update the user
     const updatedUser = await prisma.user.update({
       where: { id: id },
