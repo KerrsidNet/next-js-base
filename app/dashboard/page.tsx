@@ -1,9 +1,19 @@
 "use client"
+
+import GeneralBreadcrumbs from "../components/GeneralBreadcrumbs";
+
 const Dashboard = () => {
 
     return (
         <div>
-            <h1>Dashboard</h1>
+            <GeneralBreadcrumbs
+                items={[
+                    {
+                        name: "Dashboard",
+                        href: "/dashboard",
+                    },
+                ]}
+            />
         </div>
     )
 }

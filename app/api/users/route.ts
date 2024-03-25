@@ -1,7 +1,5 @@
 "use server";
-import prisma from "@/utils/prismaClient";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import prisma from "@/lib/prisma";
 import { withAuthentication } from "@/auth";
 
 interface GetUsersOptions {

@@ -7,6 +7,7 @@ import { Tooltip } from "@nextui-org/react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { getUsers } from "../../api/users/route";
+import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
 
 interface User {
   id: number | string;
@@ -31,7 +32,6 @@ export default function Users() {
     isOpenDelete: false,
     currentEntry: null,
   });
-  
   const pageSize = 5;
 
   const appendQueriesToUrl = (
@@ -132,6 +132,19 @@ export default function Users() {
 
   return (
     <>
+      <GeneralBreadcrumbs
+        items={[
+          {
+            name: "Dashboard",
+            href: "/dashboard",
+          },
+          {
+            name: "Users",
+            href: "/dashboard/users",
+          },
+        ]}
+      />
+
       <Table
         columns={[
           { key: "name", label: "NAME", allowsSorting: false },

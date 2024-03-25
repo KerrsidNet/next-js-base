@@ -145,17 +145,15 @@ const Table: React.FC<TableProps> = ({
         className="min-h-[400px]"
         emptyContent={isLoading ? "" : "No rows to display"}
       >
-        {(item) => (
-          <TableRow key={item?.id}>
+        {data.map((item: { id: any; }, index: any) => (
+          <TableRow key={item?.id || index}>
             {columns.map((column) => (
               <TableCell key={column.key}>
-                {column.cell
-                  ? column.cell(item)
-                  : getKeyValue(item, column.key)}
+                {column.cell ? column.cell(item) : getKeyValue(item, column.key)}
               </TableCell>
             ))}
           </TableRow>
-        )}
+        ))}
       </TableBody>
     </NextTable>
   );

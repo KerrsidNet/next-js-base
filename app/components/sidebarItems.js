@@ -4,7 +4,7 @@
  * and a roles array indicating which user roles should see this item.
  */
 // sidebarItems.js
-import { FaHome, FaUser } from "react-icons/fa";
+import { FaArchive, FaHome, FaUser } from "react-icons/fa";
 
 export const sidebarItems = [
   {
@@ -19,9 +19,15 @@ export const sidebarItems = [
     icon: FaUser,
     href: "/dashboard/users",
     tooltip: "Users",
-    roles: ['admin','user'],
+    roles: ['admin', 'user'],
   },
-  // Add more sidebar items as needed
+  {
+    label: "Fetch example",
+    icon: FaArchive,
+    href: "/dashboard/api-example",
+    tooltip: "Example of fetching external data",
+    roles: ['admin', 'user'],
+  }
 ];
 
 export default sidebarItems;

@@ -43,7 +43,7 @@ const Sidebar = () => {
                 key={index}
                 color="default"
                 placement="right"
-                content={item.label}
+                content={item.tooltip}
                 delay={1000}
               >
                 <Button
@@ -67,7 +67,7 @@ const Sidebar = () => {
                 as={Link}
                 href={item.href}
                 variant="light"
-                className="flex h-16 w-full items-center justify-center gap-2"
+                className="flex h-16 w-full items-center justify-start gap-2"
               >
                 <item.icon size={14} />
                 {item.label}
