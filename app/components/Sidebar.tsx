@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaAngleLeft, FaHome, FaUser } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
+import sidebarItems from "./sidebarItems"
+import { getFilteredByRoleItems } from "@/utils/helpers";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
-
+  const filteredSidebarItems = getFilteredByRoleItems(sidebarItems);
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
   };
@@ -36,109 +38,42 @@ const Sidebar = () => {
       <div className="flex w-full flex-1 flex-col items-center justify-start gap-5 p-2">
         {collapsed ? (
           <>
-            <Tooltip
-              color="default"
-              placement="right"
-              content="Home"
-              delay={1000}
-            >
-              <Button
-                as={Link}
-                isIconOnly
-                variant="light"
-                href={"/dashboard"}
-                className="flex h-10 items-center justify-center"
+            {filteredSidebarItems.map((item: any, index: any) => (
+              <Tooltip
+                key={index}
+                color="default"
+                placement="right"
+                content={item.label}
+                delay={1000}
               >
-                <FaHome />
-              </Button>
-            </Tooltip>
-            <Tooltip
-              color="default"
-              placement="right"
-              content="Users"
-              delay={1000}
-            >
-              <Button
-                as={Link}
-                isIconOnly
-                variant="light"
-                href={"/dashboard/users"}
-                className="flex h-10 items-center justify-center"
-              >
-                <FaUser />
-              </Button>
-            </Tooltip>
-            <Tooltip
-              color="default"
-              placement="right"
-              content="Users"
-              delay={1000}
-            >
-              <Button
-                as={Link}
-                isIconOnly
-                variant="light"
-                href={"/dashboard/users"}
-                className="flex h-10 items-center justify-center"
-              >
-                <FaUser />
-              </Button>
-            </Tooltip>
-            <Tooltip
-              color="default"
-              placement="right"
-              content="Users"
-              delay={1000}
-            >
-              <Button
-                as={Link}
-                isIconOnly
-                variant="light"
-                href={"/dashboard/users"}
-                className="flex h-10 items-center justify-center"
-              >
-                <FaUser />
-              </Button>
-            </Tooltip>
+                <Button
+                  as={Link}
+                  isIconOnly
+                  variant="light"
+                  href={item.href}
+                  className="flex h-10 items-center justify-center"
+                >
+                  <item.icon size={14} />
+                </Button>
+              </Tooltip>
+            )
+            )}
           </>
         ) : (
           <>
-            <Button
-              as={Link}
-              href={"/dashboard"}
-              variant="light"
-              className="flex h-16 w-full items-center justify-center gap-2"
-            >
-              <FaHome size={14} />
-              Home
-            </Button>
-            <Button
-              as={Link}
-              href={"/dashboard/users"}
-              variant="light"
-              className="flex h-16 w-full items-center justify-center gap-2"
-            >
-              <FaUser size={14} />
-              Users
-            </Button>
-            <Button
-              as={Link}
-              href={"/dashboard/users"}
-              variant="light"
-              className="flex h-16 w-full items-center justify-center gap-2"
-            >
-              <FaUser size={14} />
-              Users
-            </Button>
-            <Button
-              as={Link}
-              href={"/dashboard/users"}
-              variant="light"
-              className="flex h-16 w-full items-center justify-center gap-2"
-            >
-              <FaUser size={14} />
-              Users
-            </Button>
+            {filteredSidebarItems.map((item: any, index: any) => (
+              <Button
+                key={index}
+                as={Link}
+                href={item.href}
+                variant="light"
+                className="flex h-16 w-full items-center justify-center gap-2"
+              >
+                <item.icon size={14} />
+                {item.label}
+              </Button>
+            )
+            )}
           </>
         )}
       </div>

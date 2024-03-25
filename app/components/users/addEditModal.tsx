@@ -9,9 +9,9 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa6";
-import { MdEmail } from "react-icons/md";
+import { MdEmail, MdLock } from "react-icons/md";
 import { z, ZodError } from "zod";
-import { addUser, updateUser } from "@/app/dashboard/users/userService";
+import { addUser, updateUser } from "@/app/api/users/route";
 import { toast } from "react-toastify";
 import PNotify from "../PNotify";
 
@@ -19,11 +19,13 @@ import PNotify from "../PNotify";
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email format"),
+  password: z.string().min(1, "Password is required"),
 });
 
 interface User {
   id: number | string;
   email: string;
+  password: string;
   summary?: string | null;
   name?: string | null;
 }
@@ -45,9 +47,11 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
   const [formData, setFormData] = useState<{
     name: string;
     email: string;
+    password: string;
   }>({
     name: currentEntry?.name ?? "",
     email: currentEntry?.email ?? "",
+    password: "",
   });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
@@ -124,6 +128,7 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
               endContent={
                 <FaUser className="text-default-400 pointer-events-none flex-shrink-0 self-center text-xl" />
               }
+              required
               label="Name"
               name="name"
               variant="bordered"
@@ -137,6 +142,7 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
               endContent={
                 <MdEmail className="text-default-400 pointer-events-none flex-shrink-0 self-center text-xl" />
               }
+              required
               label="Email"
               name="email"
               variant="bordered"
@@ -145,6 +151,21 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
               errorMessage={formErrors["email"]}
               value={formData.email}
               onValueChange={(value) => handleValueChange("email", value)}
+            />
+            <Input
+              endContent={
+                <MdLock className="text-default-400 pointer-events-none flex-shrink-0 self-center text-xl" />
+              }
+              required
+              type="password"
+              label="Password"
+              name="password"
+              variant="bordered"
+              isInvalid={!!formErrors["password"]}
+              color={formErrors["password"] ? "danger" : "default"}
+              errorMessage={formErrors["password"]}
+              value={formData.password}
+              onValueChange={(value) => handleValueChange("password", value)}
             />
           </ModalBody>
           <ModalFooter>

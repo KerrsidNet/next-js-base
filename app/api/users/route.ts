@@ -1,6 +1,8 @@
 "use server";
 import prisma from "@/utils/prismaClient";
-import { User } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
+import { withAuthentication } from "@/auth";
 
 interface GetUsersOptions {
   page?: number;
@@ -125,7 +127,7 @@ export const addUser = async (data: any) => {
   return toReturn;
 };
 
-export const deleteUser = async (id: any) => {
+export const deleteUser = withAuthentication(async (id: any) => {
   const toReturn = {
     message: "" || {},
     error: false,
@@ -138,6 +140,6 @@ export const deleteUser = async (id: any) => {
     toReturn.message = "Failed to delete user!";
     toReturn.error = true;
   }
-
   return toReturn;
-};
+}, "deleteUser");
+

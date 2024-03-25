@@ -118,7 +118,8 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <NextTable
-      selectionMode="multiple"
+      //TODO add this back when adding bulk actions
+      // selectionMode="multiple"
       color="primary"
       isStriped
       classNames={{

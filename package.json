@@ -13,7 +13,8 @@
     "migration:create": "npx prisma migrate dev --create-only",
     "migrate": "npx prisma migrate dev",
     "migrate:prod": "npx prisma migrate deploy",
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "assign-permission": "ts-node ./utils/addPermsToRoles.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^0.4.4-canary.81",

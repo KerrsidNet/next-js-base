@@ -7,9 +7,18 @@ const saltRounds = 10;
 async function main() {
   const adminRole = await prisma.role.upsert({
     where: { name: "Admin" },
-    update: {},
     create: {
       name: "Admin",
+      permissions: {
+        create: [{ name: "deleteUser" }], // Add the deleteUser permission to the role
+      },
+    },
+    update: {
+      name: "Admin",
+      permissions: {
+        create: [{ name: "deleteUser" }], // Ensure deleteUser permission is always present
+        connectOrCreate: [{ where: { name: "deleteUser" }, create: { name: "deleteUser" } }], // Create if not exists
+      },
     },
   });
 
@@ -109,16 +118,6 @@ async function main() {
       summary: "Designer",
       roleId: userRole.id,
     },
-  });
-
-  // Add more users as needed...
-
-  console.log({
-    tony,
-    zoey,
-    additionalUser1,
-    additionalUser2,
-    additionalUser3,
   });
 }
 

@@ -9,7 +9,7 @@ import {
 import { toast } from "react-toastify";
 import PNotify from "../PNotify";
 import { FaTrash } from "react-icons/fa6";
-import { deleteUser } from "@/app/dashboard/users/userService";
+import { deleteUser } from "@/app/api/users/route";
 
 interface User {
   id: number | string;

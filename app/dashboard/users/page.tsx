@@ -6,7 +6,7 @@ import "@/app/globals.css";
 import { Tooltip } from "@nextui-org/react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { getUsers } from "./userService";
+import { getUsers } from "../../api/users/route";
 
 interface User {
   id: number | string;
@@ -31,7 +31,7 @@ export default function Users() {
     isOpenDelete: false,
     currentEntry: null,
   });
-
+  
   const pageSize = 5;
 
   const appendQueriesToUrl = (
