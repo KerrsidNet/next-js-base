@@ -5,8 +5,8 @@ import AddEditModal from "@/app/components/users/addEditModal";
 import "@/app/globals.css";
 import { Tooltip } from "@nextui-org/react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { getUsers } from "../../api/users/route";
+import { Suspense, useEffect, useState } from "react";
+import { getUsers } from "../../api/users/userService";
 import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
 
 interface User {
@@ -14,6 +14,7 @@ interface User {
   email: string;
   summary?: string | null;
   name?: string | null;
+  password?: string;
 }
 
 interface ModalSettings {
@@ -22,6 +23,13 @@ interface ModalSettings {
   currentEntry: User | null;
 }
 
+/**
+ * Users page component.
+ * 
+ * Fetches and displays users in a table. 
+ * Allows searching, pagination, editing and deleting users.
+ * Opens modals to add/edit or delete users.
+ */
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -144,47 +152,48 @@ export default function Users() {
           },
         ]}
       />
-
-      <Table
-        columns={[
-          { key: "name", label: "NAME", allowsSorting: false },
-          { key: "email", label: "EMAIL", allowsSorting: false },
-          { key: "summary", label: "SUMMARY", allowsSorting: false },
-          {
-            key: "actions",
-            label: "ACTIONS",
-            className: "text-end",
-            cell: (rowData) => (
-              <div className="flex items-center gap-5">
-                <Tooltip content="Edit">
-                  <span
-                    className="cursor-pointer text-center text-base text-blue-500 hover:text-blue-300 dark:text-white dark:hover:text-blue-500"
-                    onClick={() => handleAddEditModal(rowData.id)}
-                  >
-                    <FaPencilAlt />
-                  </span>
-                </Tooltip>
-                <Tooltip content="Delete">
-                  <span
-                    className="cursor-pointer text-center text-base text-red-500 hover:text-red-300 dark:text-white dark:hover:text-red-500"
-                    onClick={() => handleDeleteModal(rowData.id)}
-                  >
-                    <FaTrash />
-                  </span>
-                </Tooltip>
-              </div>
-            ),
-          },
-        ]}
-        isLoading={isLoading}
-        hasSearchBar
-        addMore={() => handleAddEditModal()}
-        data={users}
-        page={currentPage}
-        pages={totalPages}
-        onSearchChange={handleOnSearch}
-        onPageChange={handlePageChange}
-      />
+      {/* <Suspense> */}
+        <Table
+          columns={[
+            { key: "name", label: "NAME", allowsSorting: false },
+            { key: "email", label: "EMAIL", allowsSorting: false },
+            { key: "summary", label: "SUMMARY", allowsSorting: false },
+            {
+              key: "actions",
+              label: "ACTIONS",
+              className: "text-end",
+              cell: (rowData) => (
+                <div className="flex items-center gap-5">
+                  <Tooltip content="Edit">
+                    <span
+                      className="cursor-pointer text-center text-base text-blue-500 hover:text-blue-300 dark:text-white dark:hover:text-blue-500"
+                      onClick={() => handleAddEditModal(rowData.id)}
+                    >
+                      <FaPencilAlt />
+                    </span>
+                  </Tooltip>
+                  <Tooltip content="Delete">
+                    <span
+                      className="cursor-pointer text-center text-base text-red-500 hover:text-red-300 dark:text-white dark:hover:text-red-500"
+                      onClick={() => handleDeleteModal(rowData.id)}
+                    >
+                      <FaTrash />
+                    </span>
+                  </Tooltip>
+                </div>
+              ),
+            },
+          ]}
+          isLoading={isLoading}
+          hasSearchBar
+          addMore={() => handleAddEditModal()}
+          data={users}
+          page={currentPage}
+          pages={totalPages}
+          onSearchChange={handleOnSearch}
+          onPageChange={handlePageChange}
+        />
+      {/* </Suspense> */}
       {modalSettings.isOpenAddEdit && (
         <AddEditModal
           isOpen={modalSettings.isOpenAddEdit}
@@ -203,4 +212,5 @@ export default function Users() {
       )}
     </>
   );
+
 }

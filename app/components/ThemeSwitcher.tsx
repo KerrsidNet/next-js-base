@@ -5,6 +5,13 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { FaSun, FaMoon } from 'react-icons/fa';
 
+/**
+ * ThemeSwitcher component - toggles between light and dark theme.
+ * Uses NextUI Button and Tooltip components. 
+ * Resolves current theme with useTheme hook.
+ * Toggles to opposite theme when button clicked.
+ * Initial render delayed until mounted state updated.
+*/
 export function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();

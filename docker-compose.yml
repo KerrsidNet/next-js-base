@@ -1,0 +1,36 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: next_js_prisma_test
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - nextjs-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - nextjs-network
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@mysql:3306/${DB_NAME}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+    command: >
+      sh -c "npx prisma generate && npx prisma migrate deploy --preview-feature && npm start"
+volumes:
+  mysql_data:
+    driver: local
+networks:
+  nextjs-network:
+    driver: bridge

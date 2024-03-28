@@ -6,6 +6,11 @@
 // sidebarItems.js
 import { FaArchive, FaHome, FaUser } from "react-icons/fa";
 
+/**
+ * sidebarItems - An array of sidebar item objects to render in the sidebar.
+ * Each item contains a label, icon, href, tooltip for accessibility, 
+ * and a roles array indicating which user roles should see this item.
+ */
 export const sidebarItems = [
   {
     label: "Dashboard",

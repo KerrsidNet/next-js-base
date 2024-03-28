@@ -1,3 +1,11 @@
+/**
+ * Imports NextUI theming components and the Tailwind CSS Config type. 
+ * Defines a Tailwind CSS config object with:
+ * - Content paths for Tailwind to scan.
+ * - Theme extensions for radial and conic gradients.
+ * - Dark mode enabled via the 'dark' class.
+ * - NextUI plugin enabled.
+*/
 import { nextui } from "@nextui-org/react";
 import type { Config } from "tailwindcss";
 

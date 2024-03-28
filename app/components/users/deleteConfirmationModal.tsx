@@ -9,7 +9,7 @@ import {
 import { toast } from "react-toastify";
 import PNotify from "../PNotify";
 import { FaTrash } from "react-icons/fa6";
-import { deleteUser } from "@/app/api/users/route";
+import { deleteUser } from "@/app/api/users/userService";
 
 interface User {
   id: number | string;
@@ -25,6 +25,15 @@ interface ConfirmationModalProps {
   currentEntry: User | null;
 }
 
+/**
+ * Confirmation modal component for deleting a user.
+ * 
+ * Props:
+ * - isOpen: Whether the modal is open.
+ * - onConfirm: Callback when delete is confirmed.
+ * - onClose: Callback when modal is closed. 
+ * - currentEntry: The user object to delete.
+ */
 const DeleteConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isOpen,
   onConfirm,

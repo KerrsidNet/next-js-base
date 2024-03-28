@@ -11,16 +11,16 @@ import { useState } from "react";
 import { FaUser } from "react-icons/fa6";
 import { MdEmail, MdLock } from "react-icons/md";
 import { z, ZodError } from "zod";
-import { addUser, updateUser } from "@/app/api/users/route";
+import { addUser, updateUser } from "@/app/api/users/userService";
 import { toast } from "react-toastify";
 import PNotify from "../PNotify";
 
 interface User {
   id: number | string;
   email: string;
-  password: string;
   summary?: string | null;
   name?: string | null;
+  password?: string;
 }
 
 interface AddEditModalProps {
@@ -30,6 +30,12 @@ interface AddEditModalProps {
   onUpdateUser: (data: any) => void; // Define a more specific type for data
 }
 
+/**
+ * AddEditModal component displays a modal for adding/editing a user.
+ * 
+ * It handles form validation using Zod, makes API calls to add/update user, 
+ * and displays success/error notifications.
+ */
 const AddEditModal: React.FC<AddEditModalProps> = ({
   isOpen,
   onOpenChange,

@@ -14,6 +14,16 @@ const schema = z.object({
     password: z.string().min(1, "Password is required!"),
 });
 
+/**
+ * LoginForm component handles user login form.
+ * 
+ * Allows user to enter email and password. 
+ * Validates input using Zod schema.
+ * Handles form submission using NextAuth signIn.
+ * Displays error messages for invalid input.
+ * Navigates to /dashboard route on successful login.
+ * Shows loading state and error notifications.
+ */
 export default function LoginForm() {
     const router = useRouter();
     const [formData, setFormData] = useState({

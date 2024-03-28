@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useMemo, useState } from "react";
 import {
   Table as NextTable,
   TableHeader,
@@ -12,14 +12,13 @@ import {
   Pagination,
   Button,
 } from "@nextui-org/react";
-import { CiSearch } from "react-icons/ci";
-import { useSearchParams } from "next/navigation";
 import { BiPlus } from "react-icons/bi";
+import SearchBar from "./Searchbar";
 
 // Define the debounce function
-const debounce = (func, delay) => {
-  let timeoutId;
-  return (...args) => {
+const debounce = (func: any, delay: any) => {
+  let timeoutId: any;
+  return (...args: any) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       func(...args);
@@ -49,6 +48,25 @@ const getKeyValue = (obj: any, key: string) => {
   return obj[key];
 };
 
+/**
+ * Table component to display tabular data.
+ * 
+ * @param columns - Array of column configuration objects with keys, labels, sorting flags etc.
+ * @param pages - Total number of pages for pagination. 
+ * @param page - Current page number.
+ * @param data - Array of data objects to display in the table.
+ * @param hasSearchBar - Whether to show the search bar.
+ * @param addMore - Callback when add button is clicked.
+ * @param isLoading - Whether data is currently loading.
+ * @param onSearchChange - Debounced callback when search value changes.
+ * @param onPageChange - Callback when pagination page changes.
+ * 
+ * Renders a NextUI Table with header, body and pagination.
+ * Handles search debouncing and pagination.
+ * Columns render cells using either custom cell renderer or generic
+ * key lookup on the row data.
+ * Uses memoization to prevent re-renders where possible.
+ */
 const Table: React.FC<TableProps> = ({
   columns,
   pages,
@@ -60,7 +78,6 @@ const Table: React.FC<TableProps> = ({
   onSearchChange,
   onPageChange,
 }) => {
-  const searchParams = useSearchParams().get("search");
 
   // Define the debounced search function
   const debouncedSearch = useMemo(() => {
@@ -80,14 +97,9 @@ const Table: React.FC<TableProps> = ({
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between gap-3">
           {hasSearchBar && (
-            <Input
-              isClearable
-              className="w-full sm:max-w-[44%]"
-              placeholder="Search"
-              startContent={<CiSearch />}
-              defaultValue={searchParams ?? ""}
-              onValueChange={handleSearchChange}
-            />
+            <Suspense>
+              <SearchBar onSearchChange={handleSearchChange}></SearchBar>
+            </Suspense>
           )}
           {addMore && (
             <Button color="primary" onClick={addMore} endContent={<BiPlus />}>
@@ -97,7 +109,7 @@ const Table: React.FC<TableProps> = ({
         </div>
       </div>
     );
-  }, [searchParams, handleSearchChange]);
+  }, [handleSearchChange]);
 
   const bottomContent = useMemo(() => {
     return pages > 0 ? (

@@ -2,6 +2,11 @@
 import EventEmitter from "events";
 
 // Create a class for the singleton event emitter
+/**
+ * SingletonEventEmitter is a singleton class that extends EventEmitter.
+ * It provides a global event emitter instance that can be accessed via 
+ * SingletonEventEmitter.getInstance().
+ */
 class SingletonEventEmitter extends EventEmitter {
     private static instance: SingletonEventEmitter;
 

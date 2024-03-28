@@ -1,3 +1,8 @@
+/**
+ * Compiler options for the TypeScript configuration file.
+ * Defines settings like which JavaScript features to support, 
+ * where to find type definitions, how to process JSX, etc.
+ */
 {
   "compilerOptions": {
     "lib": [

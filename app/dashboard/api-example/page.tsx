@@ -1,8 +1,24 @@
 "use client"
 import GeneralBreadcrumbs from '@/app/components/GeneralBreadcrumbs';
 import Table from '@/app/components/Table';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 
+/**
+ * ApiExample is a React component that fetches and displays paginated data from an API.
+ * 
+ * It uses the useState and useEffect hooks to manage state and fetch data on mount.
+ * 
+ * The component fetches data from the Pokemon API, stores it in the data state variable, 
+ * and displays it in a paginated table using the react-table component.
+ * 
+ * It implements pagination by slicing the data array based on the currentPage and pageSize.
+ * 
+ * It also allows searching and changing pages by calling the handleOnSearchChange and 
+ * handlePageChange handlers passed to the Table component.
+ * 
+ * Overall, this is a reusable data fetching and display component that handles loading state,
+ * pagination, and search.
+ */
 const ApiExample = () => {
     // State variable to store the data from the API
     const [data, setData] = useState([]);
@@ -71,27 +87,29 @@ const ApiExample = () => {
                     },
                 ]}
             />
-            <Table
-                columns={[
-                    {
-                        key: 'name',
-                        label: 'Name',
-                        allowsSorting: true,
-                    },
-                    {
-                        key: 'url',
-                        label: 'Url',
-                        allowsSorting: false,
-                    },
-                ]}
-                isLoading={isLoading}
-                hasSearchBar
-                data={paginatedData}
-                page={currentPage}
-                pages={totalPages}
-                onSearchChange={handleOnSearchChange}
-                onPageChange={handlePageChange}
-            />
+            <Suspense>
+                <Table
+                    columns={[
+                        {
+                            key: 'name',
+                            label: 'Name',
+                            allowsSorting: true,
+                        },
+                        {
+                            key: 'url',
+                            label: 'Url',
+                            allowsSorting: false,
+                        },
+                    ]}
+                    isLoading={isLoading}
+                    hasSearchBar
+                    data={paginatedData}
+                    page={currentPage}
+                    pages={totalPages}
+                    onSearchChange={handleOnSearchChange}
+                    onPageChange={handlePageChange}
+                />
+            </Suspense>
         </>
     );
 };

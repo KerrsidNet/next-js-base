@@ -1,5 +1,4 @@
 "use client"
-import { useState } from 'react';
 import {
     Navbar as NextNavBar,
     NavbarContent,
@@ -16,6 +15,12 @@ import { ThemeSwitcher } from './ThemeSwitcher';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
+/**
+ * Renders the application navbar. 
+ * 
+ * Contains the company name/brand, theme switcher, and user menu.
+ * Handles logging the user out when clicked.
+ */
 const Navbar = () => {
     const router = useRouter();
 

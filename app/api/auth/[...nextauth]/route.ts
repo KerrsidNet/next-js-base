@@ -1,101 +1,25 @@
-import NextAuth, { AuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials"
-import { compare } from 'bcrypt'
-import prisma from "@/lib/prisma";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import NextAuth from "next-auth";
+import authOptions from "./authOptions";
 
-export const authOptions: AuthOptions = {
-    // adapter: PrismaAdapter(prisma),
-    providers: [
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                email: {},
-                password: {},
-            },
-            async authorize(credentials) {
-                try {
-                    if (!credentials?.email || !credentials?.password) {
-                        throw new Error("Missing required fields!");
-                    }
 
-                    const user = await prisma.user.findUnique({
-                        where: {
-                            email: credentials?.email,
-                        },
-                        include: {
-                            role: true,
-                        }
-                    }).finally(() => {
-                        prisma.$disconnect();
-                    });
+/**
+ * AuthOptions for NextAuth.js authentication.
+ * 
+ * Defines the authentication providers, session strategy, callbacks, 
+ * and other options for authentication in the app.
+ * 
+ * The main provider is CredentialsProvider which handles email/password login.
+ * It authorizes against the database with Prisma and returns user details.
+ * 
+ * JWT is used for sessions with user details encoded in the token.
+ * 
+ * Callbacks handle logic on signin, serializing the JWT, and populating the session.
+ * 
+ * Secret and other config is loaded from environment variables.
+ * 
+ * Exported as the main authOptions constant to pass to NextAuth initialization.
+ */
 
-                    if (!user) {
-                        throw new Error("Wrong email or password!");
-                    }
-
-                    const passwordMatch = await compare(credentials?.password || "", user.password);
-
-                    if (!passwordMatch) {
-                        throw new Error("Wrong email or password!");
-                    }
-                    return {
-                        id: user.id,
-                        email: user.email,
-                        role: user?.role,
-                    }
-                } catch (error: any) {
-                    console.error("Authorization error: ", error?.message || '');
-                    return { error: error?.message || '' };
-                }
-            },
-        })
-    ],
-    session: {
-        strategy: "jwt",
-    },
-    secret: process.env.NEXTAUTH_SECRET,
-    debug: process.env.NODE_ENV === 'development',
-    pages: {
-        signIn: "/login",
-    },
-    callbacks: {
-        async signIn({ user, account, profile, email, credentials }) {
-            if (user?.error) {
-                throw new Error(user?.error || "");
-            }
-            return true
-        },
-        async jwt({ token, user }) {
-            if (user) {
-                const newToken = {
-                    ...token,
-                    user: {
-                        id: user.id,
-                        name: user.name,
-                        email: user.email,
-                        role: user.role,
-                    },
-                }
-                return newToken;
-            } else {
-                return token;
-            }
-        },
-        async session({ session, token }) {
-            const newSession = {
-                ...session,
-                user: {
-                    id: token?.user.id ?? 'test',
-                    name: token?.user.name ?? 'test',
-                    email: token?.user.email ?? 'test',
-                    role: token?.user?.role ?? null,
-                },
-            }
-            return newSession;
-        },
-    }
-}
 
 const handler = NextAuth(authOptions);
 

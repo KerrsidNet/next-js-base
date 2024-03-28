@@ -6,6 +6,14 @@ const prisma = new PrismaClient();
 
 // TODO remove this when perms crud is made
 // Function to add permission to role
+/**
+ * Adds a permission to a role.
+ * 
+ * Finds the role and permission by name. 
+ * Checks if permission already assigned to role.
+ * If not, connects the permission to the role.
+ * Handles errors and disconnects Prisma client.
+*/
 async function addPermissionToRole(roleName, permissionName) {
   try {
     // Find the role by name
