@@ -37,7 +37,6 @@ export const getUsers = async ({
   sortOrder = "ascending",
 }: GetUsersOptions) => {
   let offset = 0; // Default offset is 0
-  console.log(sortBy, sortOrder);
 
   if (page > 1) {
     offset = (page - 1) * pageSize;
