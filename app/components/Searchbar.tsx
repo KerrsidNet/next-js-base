@@ -23,7 +23,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearchChange }) => {
 
     // Define the debounced search function
     const debouncedSearch = useMemo(() => {
-        return debounce(onSearchChange, 1000); // Adjust delay as needed
+        return debounce(onSearchChange, 500); // Adjust delay as needed
     }, [onSearchChange]);
 
     // Handle search change with debouncing

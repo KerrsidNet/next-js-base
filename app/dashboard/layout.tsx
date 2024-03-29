@@ -7,7 +7,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex h-screen w-full">
             <Sidebar />
-            <SSEClient />
+            {/* <SSEClient /> */}
             <Divider orientation="vertical" />
             <div className="flex flex-col w-full">
                 <Navbar />

@@ -1,5 +1,4 @@
-"use client";
-import React, { Suspense, useCallback, useMemo, useState } from "react";
+import React, { Suspense, useMemo, useReducer } from "react";
 import {
   Table as NextTable,
   TableHeader,
@@ -8,23 +7,11 @@ import {
   TableRow,
   TableCell,
   Spinner,
-  Input,
   Pagination,
   Button,
 } from "@nextui-org/react";
 import { BiPlus } from "react-icons/bi";
 import SearchBar from "./Searchbar";
-
-// Define the debounce function
-const debounce = (func: any, delay: any) => {
-  let timeoutId: any;
-  return (...args: any) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      func(...args);
-    }, delay);
-  };
-};
 
 interface TableProps {
   columns: {
@@ -42,31 +29,28 @@ interface TableProps {
   pages: number;
   page: number;
   isLoading: boolean;
+  sortDescriptor?: any;
+  onSortChange?: (sortDescriptor: any) => void;
 }
 
-const getKeyValue = (obj: any, key: string) => {
-  return obj[key];
+const initialState = {
+  topContent: null,
+  bottomContent: null,
 };
 
-/**
- * Table component to display tabular data.
- * 
- * @param columns - Array of column configuration objects with keys, labels, sorting flags etc.
- * @param pages - Total number of pages for pagination. 
- * @param page - Current page number.
- * @param data - Array of data objects to display in the table.
- * @param hasSearchBar - Whether to show the search bar.
- * @param addMore - Callback when add button is clicked.
- * @param isLoading - Whether data is currently loading.
- * @param onSearchChange - Debounced callback when search value changes.
- * @param onPageChange - Callback when pagination page changes.
- * 
- * Renders a NextUI Table with header, body and pagination.
- * Handles search debouncing and pagination.
- * Columns render cells using either custom cell renderer or generic
- * key lookup on the row data.
- * Uses memoization to prevent re-renders where possible.
- */
+type ActionType = { type: "SET_TOP_CONTENT" | "SET_BOTTOM_CONTENT"; payload: any };
+
+const reducer = (state: typeof initialState, action: ActionType) => {
+  switch (action.type) {
+    case "SET_TOP_CONTENT":
+      return { ...state, topContent: action.payload };
+    case "SET_BOTTOM_CONTENT":
+      return { ...state, bottomContent: action.payload };
+    default:
+      return state;
+  }
+};
+
 const Table: React.FC<TableProps> = ({
   columns,
   pages,
@@ -77,28 +61,18 @@ const Table: React.FC<TableProps> = ({
   isLoading,
   onSearchChange,
   onPageChange,
+  sortDescriptor,
+  onSortChange
 }) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Define the debounced search function
-  const debouncedSearch = useMemo(() => {
-    return debounce(onSearchChange, 1000); // Adjust delay as needed
-  }, [onSearchChange]);
-
-  // Handle search change with debouncing
-  const handleSearchChange = useCallback(
-    (value?: string) => {
-      debouncedSearch(value || "");
-    },
-    [debouncedSearch],
-  );
-
-  const topContent = useMemo(() => {
-    return (
+  useMemo(() => {
+    const topContent = (
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between gap-3">
           {hasSearchBar && (
             <Suspense>
-              <SearchBar onSearchChange={handleSearchChange}></SearchBar>
+              <SearchBar onSearchChange={value => onSearchChange(value)} />
             </Suspense>
           )}
           {addMore && (
@@ -109,10 +83,11 @@ const Table: React.FC<TableProps> = ({
         </div>
       </div>
     );
-  }, [handleSearchChange]);
+    dispatch({ type: "SET_TOP_CONTENT", payload: topContent });
+  }, [hasSearchBar, addMore, onSearchChange]);
 
-  const bottomContent = useMemo(() => {
-    return pages > 0 ? (
+  useMemo(() => {
+    const bottomContent = pages > 0 ? (
       <div className="flex w-full justify-center">
         <Pagination
           isCompact
@@ -126,12 +101,11 @@ const Table: React.FC<TableProps> = ({
         />
       </div>
     ) : null;
-  }, [page, pages, onPageChange, isLoading]);
+    dispatch({ type: "SET_BOTTOM_CONTENT", payload: bottomContent });
+  }, [pages, page, onPageChange, isLoading]);
 
   return (
     <NextTable
-      //TODO add this back when adding bulk actions
-      // selectionMode="multiple"
       color="primary"
       isStriped
       classNames={{
@@ -140,8 +114,10 @@ const Table: React.FC<TableProps> = ({
             ? "min-h-[420px]"
             : "min-h-[180px]",
       }}
-      topContent={topContent}
-      bottomContent={bottomContent}
+      topContent={state.topContent}
+      bottomContent={state.bottomContent}
+      sortDescriptor={sortDescriptor}
+      onSortChange={onSortChange}
     >
       <TableHeader columns={columns}>
         {(column) => (
@@ -157,11 +133,11 @@ const Table: React.FC<TableProps> = ({
         className="min-h-[400px]"
         emptyContent={isLoading ? "" : "No rows to display"}
       >
-        {data.map((item: { id: any; }, index: any) => (
+        {data.map((item: any, index: any) => (
           <TableRow key={item?.id || index}>
             {columns.map((column) => (
               <TableCell key={column.key}>
-                {column.cell ? column.cell(item) : getKeyValue(item, column.key)}
+                {column.cell ? column.cell(item) : item[column.key as keyof typeof item]}
               </TableCell>
             ))}
           </TableRow>
@@ -170,5 +146,6 @@ const Table: React.FC<TableProps> = ({
     </NextTable>
   );
 };
+
 
 export default Table;

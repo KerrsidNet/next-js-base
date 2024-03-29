@@ -29,7 +29,6 @@ const notificationListener = (message: string) => {
 const RealTimeNotifications = () => {
     useEffect(() => {
         const eventSource = new EventSource('/api/sse');
-        console.log(eventSource);
 
         eventEmitter.on('notification-message', notificationListener);
         // Clean up on unmount

@@ -33,10 +33,11 @@ export const getUsers = async ({
   pageSize = 1,
   filter = "",
   search = "",
-  sortBy = "id", // Default sorting by user id
-  sortOrder = "asc", // Default sorting order
+  sortBy = "name",
+  sortOrder = "ascending",
 }: GetUsersOptions) => {
   let offset = 0; // Default offset is 0
+  console.log(sortBy, sortOrder);
 
   if (page > 1) {
     offset = (page - 1) * pageSize;
@@ -45,9 +46,7 @@ export const getUsers = async ({
   const usersQuery: any = {
     take: pageSize,
     skip: offset,
-    orderBy: {
-      [sortBy]: sortOrder,
-    },
+    orderBy: getOrderByParams(sortBy, sortOrder)
   };
 
   if (search) {
@@ -64,7 +63,7 @@ export const getUsers = async ({
     where: usersQuery.where,
   });
 
-  const users = await prisma.user.findMany(usersQuery);
+  const users = await prisma.user.findMany({ include: { role: true }, ...usersQuery });
   const totalPages = Math.ceil(totalUsersCount / pageSize);
 
   prisma.$disconnect();
@@ -190,3 +189,16 @@ export const deleteUser = withAuthentication(async (id: any) => {
   }
   return toReturn;
 }, "deleteUser");
+
+const getOrderByParams = (sortBy: string, sortOrder: string) => {
+  const orderBy: any = {};
+  sortOrder = sortOrder === "ascending" ? "asc" : "desc";
+  // Check if sortBy includes compound sorting
+  if (sortBy.includes('.')) {
+    const [relation, field] = sortBy.split('.');
+    orderBy[relation] = { [field]: sortOrder };
+  } else {
+    orderBy[sortBy] = sortOrder;
+  }
+  return orderBy;
+};

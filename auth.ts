@@ -17,7 +17,6 @@ export const withAuthentication = (
     try {
         // Check if user is authenticated
         const session: any = await getServerSession(authOptions);
-        console.log(session);
         if (!session) {
             return { error: true, message: "Unauthorized" }; // Return error object
         }

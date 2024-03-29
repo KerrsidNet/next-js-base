@@ -5,23 +5,9 @@ import AddEditModal from "@/app/components/users/addEditModal";
 import "@/app/globals.css";
 import { Tooltip } from "@nextui-org/react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getUsers } from "../../api/users/userService";
 import GeneralBreadcrumbs from "@/app/components/GeneralBreadcrumbs";
-
-interface User {
-  id: number | string;
-  email: string;
-  summary?: string | null;
-  name?: string | null;
-  password?: string;
-}
-
-interface ModalSettings {
-  isOpenAddEdit: boolean;
-  isOpenDelete: boolean;
-  currentEntry: User | null;
-}
 
 /**
  * Users page component.
@@ -31,16 +17,20 @@ interface ModalSettings {
  * Opens modals to add/edit or delete users.
  */
 export default function Users() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [modalSettings, setModalSettings] = useState<ModalSettings>({
-    isOpenAddEdit: false,
-    isOpenDelete: false,
-    currentEntry: null,
+  const [state, setState] = useState({
+    users: [],
+    totalPages: 0,
+    currentPage: 1,
+    isLoading: true,
+    sortDescriptor: { column: 'name', direction: 'ascending' },
+    modalSettings: {
+      isOpenAddEdit: false,
+      isOpenDelete: false,
+      currentEntry: null,
+    }
   });
-  const pageSize = 5;
+
+  const pageSize = 2;
 
   const appendQueriesToUrl = (
     queries: { key: string; value: string | number }[],
@@ -58,19 +48,31 @@ export default function Users() {
   };
 
   const fetchUsers = async () => {
-    setIsLoading(true);
+    setState((prevState) => ({
+      ...prevState,
+      isLoading: true,
+      users: [],
+    }));
     try {
       const userData = await getUsers({
         search: getUrlQueryElement("search"),
-        page: Number(getUrlQueryElement("page")) ?? 1,
+        page: Number(getUrlQueryElement("page")) ?? state.currentPage,
         pageSize: pageSize,
+        sortBy: getUrlQueryElement("sortBy") || state.sortDescriptor.column,
+        sortOrder: getUrlQueryElement("sortOrder") || state.sortDescriptor.direction,
       });
-      setUsers(userData.users);
-      setTotalPages(userData.totalPages);
+      setState((prevState) => ({
+        ...prevState,
+        users: userData.users as any,
+        totalPages: userData.totalPages,
+      }));
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
-      setIsLoading(false);
+      setState((prevState) => ({
+        ...prevState,
+        isLoading: false,
+      }));
     }
   };
 
@@ -79,18 +81,25 @@ export default function Users() {
       appendQueriesToUrl([
         { key: "page", value: getUrlQueryElement("page") || 1 },
       ]);
-      setCurrentPage(Number(getUrlQueryElement("page")));
+      setState((prevState) => ({
+        ...prevState,
+        currentPage: Number(getUrlQueryElement("page")),
+      }));
       await fetchUsers();
     };
     init();
   }, []);
 
   const handleAddEditModal = (id?: string) => {
-    const userToEdit = users.find((user) => user.id === id);
-    setModalSettings((prevState) => ({
+    const userToEdit = state.users.find((user: any) => user.id === id);
+
+    setState((prevState) => ({
       ...prevState,
-      isOpenAddEdit: true,
-      currentEntry: userToEdit ?? null,
+      modalSettings: {
+        ...prevState.modalSettings,
+        isOpenAddEdit: true,
+        currentEntry: userToEdit ?? null
+      }
     }));
   };
 
@@ -99,25 +108,31 @@ export default function Users() {
   };
 
   const handleDeleteModal = (id: string) => {
-    const userToDelete = users.find((user) => user.id === id);
+    const userToDelete = state.users.find((user: any) => user.id === id);
     if (userToDelete) {
-      setModalSettings((prevState) => ({
+      setState((prevState) => ({
         ...prevState,
-        isOpenDelete: true,
-        currentEntry: userToDelete,
+        modalSettings: {
+          ...prevState.modalSettings,
+          isOpenDelete: true,
+          currentEntry: userToDelete,
+        }
       }));
     }
   };
 
-  const handleDelete = () => {
-    fetchUsers();
+  const handleDelete = async () => {
+    await fetchUsers();
   };
 
   const handleModalClose = () => {
-    setModalSettings((prevState) => ({
+    setState((prevState) => ({
       ...prevState,
-      isOpenAddEdit: false,
-      isOpenDelete: false,
+      modalSettings: {
+        ...prevState.modalSettings,
+        isOpenAddEdit: false,
+        isOpenDelete: false,
+      }
     }));
   };
 
@@ -129,14 +144,39 @@ export default function Users() {
       },
     ];
     appendQueriesToUrl(queries);
+    if (value == "") {
+      setState((prevState) => ({
+        ...prevState,
+        currentPage: 1,
+      }));
+      appendQueriesToUrl([{ key: "page", value: 1 }]);
+    }
     await fetchUsers();
   };
 
   const handlePageChange = async (page: number) => {
-    setCurrentPage(page);
+    setState((prevState) => ({
+      ...prevState,
+      currentPage: page,
+    }));
     appendQueriesToUrl([{ key: "page", value: page.toString() }]);
     await fetchUsers();
   };
+
+  const handleSortChange = async (sortDescriptor: any) => {
+    setState((prevState) => ({
+      ...prevState,
+      users: [],
+      sortDescriptor,
+      currentPage: 1,
+    }));
+    appendQueriesToUrl([
+      { key: "sortBy", value: sortDescriptor.column },
+      { key: "sortOrder", value: sortDescriptor.direction },
+      { key: "page", value: 1 }
+    ]);
+    await fetchUsers();
+  }
 
   return (
     <>
@@ -152,65 +192,72 @@ export default function Users() {
           },
         ]}
       />
-      {/* <Suspense> */}
-        <Table
-          columns={[
-            { key: "name", label: "NAME", allowsSorting: false },
-            { key: "email", label: "EMAIL", allowsSorting: false },
-            { key: "summary", label: "SUMMARY", allowsSorting: false },
-            {
-              key: "actions",
-              label: "ACTIONS",
-              className: "text-end",
-              cell: (rowData) => (
-                <div className="flex items-center gap-5">
-                  <Tooltip content="Edit">
-                    <span
-                      className="cursor-pointer text-center text-base text-blue-500 hover:text-blue-300 dark:text-white dark:hover:text-blue-500"
-                      onClick={() => handleAddEditModal(rowData.id)}
-                    >
-                      <FaPencilAlt />
-                    </span>
-                  </Tooltip>
-                  <Tooltip content="Delete">
-                    <span
-                      className="cursor-pointer text-center text-base text-red-500 hover:text-red-300 dark:text-white dark:hover:text-red-500"
-                      onClick={() => handleDeleteModal(rowData.id)}
-                    >
-                      <FaTrash />
-                    </span>
-                  </Tooltip>
-                </div>
-              ),
-            },
-          ]}
-          isLoading={isLoading}
-          hasSearchBar
-          addMore={() => handleAddEditModal()}
-          data={users}
-          page={currentPage}
-          pages={totalPages}
-          onSearchChange={handleOnSearch}
-          onPageChange={handlePageChange}
-        />
-      {/* </Suspense> */}
-      {modalSettings.isOpenAddEdit && (
+      <Table
+        columns={[
+          { key: "name", label: "NAME", allowsSorting: true },
+          { key: "email", label: "EMAIL", allowsSorting: true },
+          { key: "summary", label: "SUMMARY", allowsSorting: true },
+          {
+            key: "role.name",
+            label: "ROLE",
+            allowsSorting: true,
+            cell: (rowData) => (
+              (rowData?.role?.name ?? "No role")
+            ),
+          },
+          {
+            key: "actions",
+            label: "ACTIONS",
+            className: "text-end",
+            cell: (rowData) => (
+              <div className="flex items-center gap-5">
+                <Tooltip content="Edit">
+                  <span
+                    className="cursor-pointer text-center text-base text-blue-500 hover:text-blue-300 dark:text-white dark:hover:text-blue-500"
+                    onClick={() => handleAddEditModal(rowData.id)}
+                  >
+                    <FaPencilAlt />
+                  </span>
+                </Tooltip>
+                <Tooltip content="Delete">
+                  <span
+                    className="cursor-pointer text-center text-base text-red-500 hover:text-red-300 dark:text-white dark:hover:text-red-500"
+                    onClick={() => handleDeleteModal(rowData.id)}
+                  >
+                    <FaTrash />
+                  </span>
+                </Tooltip>
+              </div>
+            ),
+          },
+        ]}
+        isLoading={state.isLoading}
+        hasSearchBar
+        addMore={() => handleAddEditModal()}
+        data={state.users}
+        page={state.currentPage}
+        pages={state.totalPages}
+        onSearchChange={handleOnSearch}
+        onPageChange={handlePageChange}
+        sortDescriptor={state.sortDescriptor}
+        onSortChange={handleSortChange}
+      />
+      {state.modalSettings.isOpenAddEdit && (
         <AddEditModal
-          isOpen={modalSettings.isOpenAddEdit}
+          isOpen={state.modalSettings.isOpenAddEdit}
           onOpenChange={handleModalClose}
-          currentEntry={modalSettings.currentEntry}
+          currentEntry={state.modalSettings.currentEntry}
           onUpdateUser={handleAddEdit}
         />
       )}
-      {modalSettings.isOpenDelete && (
+      {state.modalSettings.isOpenDelete && (
         <DeleteConfirmationModal
-          isOpen={modalSettings.isOpenDelete}
+          isOpen={state.modalSettings.isOpenDelete}
           onConfirm={handleDelete}
           onClose={handleModalClose}
-          currentEntry={modalSettings.currentEntry}
+          currentEntry={state.modalSettings.currentEntry}
         />
       )}
     </>
   );
-
 }
