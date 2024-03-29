@@ -8,7 +8,10 @@ WORKDIR /usr/app
 COPY . .
 
 # Install dependencies
-RUN npm install
+RUN npm install --verbose
+
+# Run tests
+RUN npm test
 
 RUN npm run build
 

@@ -14,13 +14,13 @@ interface GetUsersOptions {
 
 /**
  * Retrieves paginated users from the database.
- * 
+ *
  * Allows filtering, searching, sorting and pagination.
- * 
+ *
  * @param options - Options object with:
  * - page - Page number, defaults to 1
  * - pageSize - Page size, defaults to 1
- * - filter - Filter string 
+ * - filter - Filter string
  * - search - Search string
  * - sortBy - Sort by field, defaults to 'id'
  * - sortOrder - Sort order, defaults to 'asc'
@@ -76,10 +76,10 @@ export const getUsers = async ({
 
 /**
  * Updates a user by ID with the provided data.
- * 
+ *
  * Checks if email already exists on another user before updating.
  * Hashes password if provided before updating.
- * 
+ *
  * Returns an object with the updated user data, success/error messages, and a boolean error flag.
  */
 export const updateUser = async (id: any, data: any) => {
@@ -126,8 +126,8 @@ export const updateUser = async (id: any, data: any) => {
 
 /**
  * Creates a new user with the provided data.
- * 
- * Checks if email already exists before creating user. 
+ *
+ * Checks if email already exists before creating user.
  * Returns object with new user data, success/error messages, and error flag.
  */
 export const addUser = async (data: any) => {
@@ -161,16 +161,16 @@ export const addUser = async (data: any) => {
 
 /**
  * Deletes a user by ID.
- * 
- * This is an exported API route that is protected by the withAuthentication middleware. 
- * 
+ *
+ * This is an exported API route that is protected by the withAuthentication middleware.
+ *
  * It accepts the user ID as a parameter.
- * 
+ *
  * It calls the Prisma delete method to delete the user by ID.
- * 
- * It returns an object with a message and error flag. 
+ *
+ * It returns an object with a message and error flag.
  * The message is the deleted user on success, or an error message on failure.
- * 
+ *
  * The withAuthentication middleware checks for a valid JWT token before allowing the request.
  * It is used to protect routes that require authentication.
  *
@@ -190,4 +190,3 @@ export const deleteUser = withAuthentication(async (id: any) => {
   }
   return toReturn;
 }, "deleteUser");
-
